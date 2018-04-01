@@ -21,6 +21,10 @@ An application that sends a notification when a domain name of ones choice is av
   - deleted when user deletes account
   - deleted when user stops watching domain
 
+### Todo
+
+- Allow API users to specify response fields
+
 ### License
 
 The MIT License (MIT)
