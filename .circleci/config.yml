@@ -2,8 +2,10 @@ version: 2
 jobs:
   build:
     working_directory: ~/domainalert
+
     docker:
       - image: circleci/python:3.6.5
+
       - image: circleci/mysql:5.7
         environment:
           - MYSQL_ALLOW_EMPTY_PASSWORD: yes
@@ -11,20 +13,27 @@ jobs:
           - MYSQL_PASSWORD: domainalert
           - MYSQL_ROOT_HOST: "%"
           - MYSQL_DATABASE: domainalert_test
+
     steps:
       - checkout
+
       - restore_cache:
           key: domainalert-{{ .Branch }}-{{ checksum "requirements.txt" }}
+
       - run:
+          name: install python dependencies
           command: |
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
+
       - save_cache:
           key: domainalert-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - "venv"
+
       - run:
+          name: run tests
           command: |
             . venv/bin/activate
             python manage.py test
