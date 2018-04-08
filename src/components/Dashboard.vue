@@ -9,6 +9,8 @@
 </template>
 
 <script>
+  import { User } from '../resources'
+
   export default {
     name: 'Dashboard',
 
@@ -20,7 +22,7 @@
 
     async created() {
       try {
-        const response = await this.$http.get('http://localhost:8000/api/v1/users')
+        const response = await User.get()
         this.users = response.data
       } catch (e) {
         console.log(e)
