@@ -3,78 +3,59 @@ import { logger } from './index'
 class FacebookService {
     api(path, method, params) {
         return new Promise((resolve, reject) => {
-            if (window.hasOwnProperty('FB')) {
-                window.FB.api(path, method, params, response => {
-                    if (!response || response.error) {
-                        if (response.error) {
-                            reject(response.error)
-                        } else {
-                            reject(response)
-                        }
+            window.FB.api(path, method, params, response => {
+                if (!response || response.error) {
+                    if (response.error) {
+                        reject(response.error)
                     } else {
-                        resolve(response)
+                        reject(response)
                     }
-                })
-            } else {
-                reject(new Error('FB is not defined'))
-            }
+                } else {
+                    resolve(response)
+                }
+            })
         })
     }
 
     login() {
         return new Promise((resolve, reject) => {
-            if (window.hasOwnProperty('FB')) {
-                window.FB.login(response => {
-                    if (response.status === 'connected') {
-                        logger.debug('Successfully logged in via Facebook', response)
-                        resolve(response)
-                    } else {
-                        logger.debug('Failed to login via Facebook', response)
-                        reject(response)
-                    }
-                }, {scope: 'public_profile,email'})
-            } else {
-                reject(new Error('FB is not defined'))
-            }
+            window.FB.login(response => {
+                if (response.status === 'connected') {
+                    logger.debug('Successfully logged in via Facebook', response)
+                    resolve(response)
+                } else {
+                    logger.debug('Failed to login via Facebook', response)
+                    reject(response)
+                }
+            }, {scope: 'public_profile,email'})
         })
     }
 
     isLoggedIn() {
         return new Promise(resolve => {
-            if (window.hasOwnProperty('FB')) {
-                window.FB.getLoginStatus(response => {
-                    logger.debug('[FacebookService] getLoginStatus', response.status === 'connected')
-                    resolve(response.status === 'connected')
-                })
-            } else {
-                logger.debug('[FacebookService::isLoggedIn] window does not have FB object')
-                resolve(false)
-            }
+            window.FB.getLoginStatus(response => {
+                logger.debug('[FacebookService] getLoginStatus', response.status === 'connected')
+                resolve(response.status === 'connected')
+            })
         })
     }
 
     logout() {
         return new Promise(resolve => {
-            if (window.hasOwnProperty('FB')) {
-                window.FB.logout(response => {
-                    logger.debug('Successfully logged out of Facebook', response)
-                    resolve(true)
-                })
-            } else {
-                resolve(false)
-            }
+            window.FB.logout(response => {
+                logger.debug('Successfully logged out of Facebook', response)
+                resolve(true)
+            })
         })
     }
 
     logPageView() {
-        if (window.hasOwnProperty('FB')) {
-            logger.debug('logging page view')
-            window.FB.AppEvents.logPageView()
-        }
+        logger.debug('logging page view')
+        window.FB.AppEvents.logPageView()
     }
 
     getUserID() {
-        return window.hasOwnProperty('FB') ? window.FB.getUserID() : null
+        return window.FB.getUserID()
     }
 }
 
