@@ -38,15 +38,24 @@
             </li>
         </ul>
 
-        <a href="#" class="logout-button">
+        <a href="javascript:void(0)" class="logout-button" @click.prevent="onClickLogout">
             <em class="fa fa-power-off"></em> Signout
         </a>
     </nav>
 </template>
 
 <script>
+    import router from '../router'
+    import { facebookService } from '../core'
+
     export default {
-        name: 'Navbar'
+        name: 'Navbar',
+        methods: {
+            async onClickLogout() {
+                await facebookService.logout()
+                router.push({path: '/'})
+            }
+        }
     }
 </script>
 

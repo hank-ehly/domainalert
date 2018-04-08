@@ -1,27 +1,38 @@
 <template>
-    <main>
-        <h1>Dashboard</h1>
-        <button @click="onClickLogout">Logout of Facebook</button>
-        <router-link :to="{ name: 'Landing' }">Go to landing</router-link>
+    <div>
+        <div class="col-md-12 col-lg-8">
+            <div class="jumbotron">
+                <h1 class="mb-4">Hello, {{ user.email }}</h1>
+                <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra
+                    attention to featured content or information.</p>
+                <p>It uses utility classes for typography and spacing to space content out within the larger
+                    container.</p>
 
-        <ul>
-            <li v-for="user in users" :key="user.id">{{ user.email }} {{ user.fb_user_id }}</li>
-        </ul>
+                <p class="lead">
+                    <a class="btn btn-primary btn-lg mt-2" href="#" role="button">Learn more</a>
+                </p>
+            </div>
 
-        <img v-if="userHasPicture" :src="user.picture.data.url" :alt="user.name">
+            <div class="card mb-4">
+                <div class="card-block">
+                    <ul>
+                        <li v-for="user in users" :key="user.id">{{ user.email }} {{ user.fb_user_id }}</li>
+                    </ul>
 
-        <form @submit="onSubmit($event)">
-            <input type="text" v-model.trim="domain" placeholder="domain">
-            <p>Domain: {{ domain }}</p>
-            <button type="submit" :disabled="!validateForm()">Register</button>
-        </form>
-    </main>
+                    <form @submit="onSubmit($event)">
+                        <input type="text" v-model.trim="domain" placeholder="domain">
+                        <p>Domain: {{ domain }}</p>
+                        <button type="submit" :disabled="!validateForm()">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
     import { User } from '../resources'
-    import { facebookService } from '../core'
-    import router from '../router'
+    import { authService } from '../core'
 
     export default {
         name: 'Dashboard',
@@ -29,15 +40,13 @@
         data() {
             return {
                 domain: '',
-                users: [],
-                user: facebookService.cachedUser
+                users: []
             }
         },
 
         computed: {
-            userHasPicture() {
-                console.log(this.user)
-                return this.user && this.user.picture && this.user.picture.data && this.user.picture.data.url
+            user() {
+                return authService.currentUser
             }
         },
 
@@ -60,11 +69,6 @@
                     return true
                 }
                 e.preventDefault()
-            },
-
-            async onClickLogout() {
-                await facebookService.logout()
-                router.push({path: '/'})
             }
         }
     }

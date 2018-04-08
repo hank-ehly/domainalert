@@ -1,10 +1,13 @@
-import { facebookService } from './index'
+import { authService } from './index'
 
 export default async function isAuthenticated(to, from, next) {
     if (to.matched.some(record => record.meta.requiresAuth)) {
         try {
-            await facebookService.isAuthenticated()
-            next()
+            if (await authService.isAuthenticated()) {
+                next()
+            } else {
+                next({path: '/', query: {redirect: to.fullPath}})
+            }
         } catch (e) {
             next({path: '/', query: {redirect: to.fullPath}})
         }

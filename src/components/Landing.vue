@@ -1,13 +1,12 @@
 <template>
-    <main>
-        <h1>Landing</h1>
+    <div class="col-md-12 col-lg-8">
         <router-link v-if="isAuthenticated" :to="{ name: 'Dashboard' }">Go to dashboard</router-link>
         <button v-if="!isAuthenticated" class="btn btn-primary" @click="login">Login with Facebook</button>
-    </main>
+    </div>
 </template>
 
 <script>
-    import { facebookService, logger, userService } from '../core'
+    import { facebookService, authService, logger } from '../core'
     import { User } from '../resources'
     import router from '../router'
 
@@ -20,21 +19,30 @@
         },
         methods: {
             async login() {
+                let fbUser
+
                 try {
-                    await facebookService.login()
+                    await authService.login()
                 } catch (e) {
                     logger.debug('Failed to login..', e)
+                    return
                 }
 
                 try {
-                    const user = await facebookService.api('/me', {fields: ['email', 'id', 'picture', 'first_name']})
-                    logger.debug('Obtained current user from Facebook', user)
+                    fbUser = await facebookService.api('/me', {fields: ['email', 'id', 'picture', 'first_name']})
+                    logger.debug('Obtained current user from Facebook', fbUser)
+                } catch (e) {
+                    logger.debug('Failed to obtain user info from Facebook', e)
+                    return
+                }
 
-                    const existingUser = await User.query({search: user.id})
-                    if (!existingUser.data.length) {
+                try {
+                    const userSearchRes = await User.query({search: fbUser.id})
+
+                    if (!userSearchRes.data.length) {
                         logger.debug('No user exists in database. Creating.')
-                        const response = await User.save({}, {email: user.email, fb_user_id: user.id})
-                        userService.currentUser = response.data
+                        const userCreateRes = await User.save({}, {email: fbUser.email, fb_user_id: fbUser.id})
+                        authService.setCurrentUser(userCreateRes.data)
                     }
 
                     router.push({path: '/dashboard'})
@@ -43,11 +51,9 @@
                 }
             }
         },
-        created() {
-            facebookService.isAuthenticated().then(() => {
-                this.isAuthenticated = true
-            }).catch(() => {
-            })
+        async created() {
+            logger.debug('[Landing] created')
+            this.isAuthenticated = await authService.isAuthenticated()
         }
     }
 </script>
