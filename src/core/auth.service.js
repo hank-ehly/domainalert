@@ -34,10 +34,18 @@ class AuthService {
     }
 
     async syncUserCache() {
-        let user
+        let user, fbUser
 
         if (!await this.isAuthenticated()) {
             logger.debug('Cannot update user cache because user is not logged in')
+            return
+        }
+
+        try {
+            fbUser = await facebookService.api('/me', {fields: ['email', 'id', 'picture', 'first_name']})
+            logger.debug('Obtained current user from Facebook', fbUser)
+        } catch (e) {
+            logger.debug('Failed to obtain user info from Facebook', e)
             return
         }
 
@@ -50,7 +58,8 @@ class AuthService {
         }
 
         if (user && user.data && user.data.length) {
-            this.setCurrentUser(user.data[0])
+            let mergedUserObj = Object.assign(user.data[0], fbUser)
+            this.setCurrentUser(mergedUserObj)
             logger.debug('Updated user cache with data', user.data[0])
         } else {
             logger.debug('Error: no user data available.')

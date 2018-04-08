@@ -49,7 +49,7 @@
                         user = userCreateResponse.data
                     }
 
-                    authService.setCurrentUser(user)
+                    authService.setCurrentUser(Object.assign(user, fbUser))
                     router.push({path: '/dashboard'})
                 } catch (e) {
                     logger.debug('Failed to create user..', e)
