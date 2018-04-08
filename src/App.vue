@@ -1,15 +1,29 @@
 <template>
-  <div id="app">
-    <router-view/>
-  </div>
+    <div id="app">
+        <router-view/>
+
+        <button v-if="isDev" @click="logout">Logout of Facebook</button>
+    </div>
 </template>
 
 <script>
-  export default {
-    name: 'App'
-  }
+    import { facebookService } from './core'
+
+    export default {
+        name: 'App',
+        data: function () {
+            return {
+                isDev: process.env.NODE_ENV === 'development'
+            }
+        },
+        methods: {
+            logout() {
+                facebookService.logout()
+            }
+        }
+    }
 </script>
 
 <style lang="scss">
-  @import '~bootstrap/scss/bootstrap';
+    @import '~bootstrap/scss/bootstrap';
 </style>

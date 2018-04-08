@@ -12,9 +12,9 @@
 
     export default {
         name: 'Landing',
-        computed: {
-            isAuthenticated() {
-                return facebookService.isAuthenticated()
+        data() {
+            return {
+                isAuthenticated: false
             }
         },
         methods: {
@@ -23,6 +23,11 @@
                     router.push({path: '/dashboard'})
                 })
             }
+        },
+        created() {
+            facebookService.isAuthenticated().then(() => {
+                this.isAuthenticated = true
+            }).catch(() => {})
         }
     }
 </script>
