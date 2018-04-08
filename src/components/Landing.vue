@@ -37,14 +37,19 @@
                 }
 
                 try {
-                    const userSearchRes = await User.query({search: fbUser.id})
+                    let userSearchResponse = await User.query({search: fbUser.id})
+                    let user
 
-                    if (!userSearchRes.data.length) {
+                    if (userSearchResponse.data.length) {
+                        logger.debug('Found user in db')
+                        user = userSearchResponse.data[0]
+                    } else {
                         logger.debug('No user exists in database. Creating.')
-                        const userCreateRes = await User.save({}, {email: fbUser.email, fb_user_id: fbUser.id})
-                        authService.setCurrentUser(userCreateRes.data)
+                        let userCreateResponse = await User.save({}, {email: fbUser.email, fb_user_id: fbUser.id})
+                        user = userCreateResponse.data
                     }
 
+                    authService.setCurrentUser(user)
                     router.push({path: '/dashboard'})
                 } catch (e) {
                     logger.debug('Failed to create user..', e)
