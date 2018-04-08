@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Landing from '@/components/Landing'
 import Dashboard from '@/components/Dashboard'
+import { AuthGuard } from '../core'
 
 Vue.use(Router)
 
@@ -15,9 +16,16 @@ let config = {
     {
       path: '/dashboard',
       name: 'Dashboard',
-      component: Dashboard
+      component: Dashboard,
+      meta: {
+        requiresAuth: true
+      }
     }
   ]
 }
 
-export default new Router(config)
+const router = new Router(config)
+
+router.beforeEach(AuthGuard)
+
+export default router
