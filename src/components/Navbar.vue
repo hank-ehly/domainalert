@@ -46,13 +46,13 @@
 
 <script>
     import router from '../router'
-    import { facebookService } from '../core'
+    import { authService } from '../core'
 
     export default {
         name: 'Navbar',
         methods: {
             async onClickLogout() {
-                await facebookService.logout()
+                await authService.logout()
                 router.push({path: '/'})
             }
         }

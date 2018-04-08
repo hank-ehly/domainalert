@@ -30,7 +30,7 @@ class AuthService {
 
     logout() {
         localStorage.removeItem(this.kUserCache)
-        facebookService.logout()
+        return facebookService.logout()
     }
 
     async syncUserCache() {

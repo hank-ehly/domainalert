@@ -47,18 +47,23 @@ class FacebookService {
                     resolve(response.status === 'connected')
                 })
             } else {
-                logger.debug('[FacebookService] window does not have FB object')
+                logger.debug('[FacebookService::isLoggedIn] window does not have FB object')
                 resolve(false)
             }
         })
     }
 
     logout() {
-        if (window.hasOwnProperty('FB')) {
-            window.FB.logout(response => {
-                logger.debug('Successfully logged out of Facebook', response)
-            })
-        }
+        return new Promise(resolve => {
+            if (window.hasOwnProperty('FB')) {
+                window.FB.logout(response => {
+                    logger.debug('Successfully logged out of Facebook', response)
+                    resolve(true)
+                })
+            } else {
+                resolve(false)
+            }
+        })
     }
 
     logPageView() {

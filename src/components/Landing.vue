@@ -53,7 +53,9 @@
         },
         async created() {
             logger.debug('[Landing] created')
-            this.isAuthenticated = await authService.isAuthenticated()
+            if (await authService.isAuthenticated()) {
+                this.isAuthenticated = true
+            }
         }
     }
 </script>
