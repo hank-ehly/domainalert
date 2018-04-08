@@ -4,6 +4,7 @@ from django.db import models
 class User(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     email = models.EmailField()
+    fb_user_id = models.CharField(unique=True, max_length=255, default='')
 
     class Meta:
         ordering = ('created_at',)

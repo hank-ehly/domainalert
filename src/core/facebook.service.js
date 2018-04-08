@@ -1,7 +1,7 @@
-import { logger } from './index'
+import { logger, userService } from './index'
 
 class FacebookService {
-    get api() {
+    get _service() {
         if (window.hasOwnProperty('FB')) {
             return window.FB
         } else {
@@ -9,9 +9,25 @@ class FacebookService {
         }
     }
 
+    api(path, method, params) {
+        return new Promise((resolve, reject) => {
+            this._service.api(path, method, params, response => {
+                if (!response || response.error) {
+                    if (response.error) {
+                        reject(response.error)
+                    } else {
+                        reject(response)
+                    }
+                } else {
+                    resolve(response)
+                }
+            })
+        })
+    }
+
     login() {
         return new Promise((resolve, reject) => {
-            this.api.login(response => {
+            this._service.login(response => {
                 if (response.status === 'connected') {
                     logger.debug('Successfully logged in via Facebook', response)
                     resolve(response)
@@ -25,7 +41,7 @@ class FacebookService {
 
     isAuthenticated() {
         return new Promise((resolve, reject) => {
-            this.api.getLoginStatus(response => {
+            this._service.getLoginStatus(response => {
                 if (response.status === 'connected') {
                     logger.debug('getLoginStatus returned "connected" status')
                     resolve(response)
@@ -38,18 +54,19 @@ class FacebookService {
     }
 
     getUserID() {
-        return this.api.getUserID()
+        return this._service.getUserID()
     }
 
     logout() {
-        this.api.logout(response => {
+        userService.clearCache()
+        this._service.logout(response => {
             logger.debug('Successfully logged out of Facebook', response)
         })
     }
 
     logPageView() {
         logger.debug('logging page view')
-        this.api.AppEvents.logPageView()
+        this._service.AppEvents.logPageView()
     }
 }
 
@@ -60,6 +77,10 @@ class FacebookServiceStub {
                 logger.debug('[FacebookServiceStub] AppEvents.logPageView')
             }
         }
+    }
+
+    api() {
+        logger.debug('[FacebookServiceStub] api')
     }
 
     login() {
