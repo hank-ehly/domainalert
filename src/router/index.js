@@ -7,21 +7,21 @@ import { AuthGuard, facebookService } from '../core'
 Vue.use(Router)
 
 let config = {
-  routes: [
-    {
-      path: '/',
-      name: 'Landing',
-      component: Landing
-    },
-    {
-      path: '/dashboard',
-      name: 'Dashboard',
-      component: Dashboard,
-      meta: {
-        requiresAuth: true
-      }
-    }
-  ]
+    routes: [
+        {
+            path: '/',
+            name: 'Landing',
+            component: Landing
+        },
+        {
+            path: '/dashboard',
+            name: 'Dashboard',
+            component: Dashboard,
+            meta: {
+                requiresAuth: true
+            }
+        }
+    ]
 }
 
 const router = new Router(config)
